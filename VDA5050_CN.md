@@ -979,7 +979,7 @@ width | m | float64 | 负载边界框的绝对宽度。
 actionId | |string | 动作的唯一标识符。
 *actionType* | | string | 动作的类型。<br><br>可选：仅用于信息或可视化目的。主控系统知道在命令中分派的动作类型。
 *actionDescription* | | string | 当前动作的附加信息。
-actionStatus | | string | 枚举{'WAITING', 'INITIALIZING', 'RUNNING', 'PAUSED', 'FINISHED', 'FAILED'}<br><br>参见[6.11 actionStates](#611-actionstates)。
+actionStatus | | string | 枚举{'WAITING', 'INITIALIZING', 'RUNNING', 'PAUSED', 'FINISHED', 'FAILED'}<br><br>参见[6.11 动作状态](#611-action-states)。
 *resultDescription*<br>} | | string | 结果的描述，例如，RFID读取的结果。<br><br>错误将在错误中传输。
 
 对象结构 | 单位 | 数据类型 | 描述
