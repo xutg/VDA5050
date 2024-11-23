@@ -86,12 +86,12 @@ www.vda.de
 [8 术语表](#8-glossary)<br>
 [8.1 定义](#81-definition)<br>
 
-# 1 foreword
+# 1 Foreword
 # 1 前言
 
 该接口是由德国汽车工业协会 (VDA) 和德国机械设备制造业联合会 (VDMA) 合作建立的。双方的目标是创建一个普遍适用的接口。对接口的更改建议应提交给VDA，并与VDMA共同评估，在积极决定的情况下纳入新版本状态。通过GitHub对本文档的贡献非常感谢。可以在以下链接找到存储库：https://github.com/vda5050/vda5050。
 
-# 2 objective-of-the-document
+# 2 Objective of the document
 # 2 文件目标
 
 本建议的目标是简化新车辆与现有主控系统的连接，并在同一工作环境中实现来自不同制造商的AGV和传统系统（库存系统）的并行操作。
@@ -488,6 +488,7 @@ factsheet | AGV | 主控系统 | 参数或供应商特定信息，以协助在�
 ![图9 取消命令后的预期行为](./assets/process_cancel_order.png)
 >图9 取消命令后的预期行为。
 
+#### 6.6.3.1 Receiving a new order after cancellation
 #### 6.6.3.1 取消后接收新命令
 
 在命令取消后，车辆应处于接收新命令的状态。
@@ -501,6 +502,7 @@ factsheet | AGV | 主控系统 | 参数或供应商特定信息，以协助在�
 - 发送一个命令，其中第一个节点是一个临时节点，位于AGV当前站立的位置。然后，AGV应意识到该节点是显而易见的并接受命令。
 - 发送一个命令，其中第一个节点是先前命令的最后遍历节点，但设置偏差范围如此之大，以至于AGV在此范围内。因此，AGV应意识到该节点应被视为已遍历并接受命令。
 
+#### 6.6.3.2 Receiving a cancelOrder action when AGV has no order
 #### 6.6.3.2 当AGV没有命令时接收取消命令动作
 
 如果AGV接收到`cancelOrder`动作，但AGV当前没有命令，或者先前的命令已被取消，则`cancelOrder`动作应报告为“FAILED”。
@@ -512,6 +514,7 @@ AGV应报告“noOrderToCancel”错误，并将`errorLevel`设置为“WARNING�
 
 在以下几种情况下，应拒绝命令。这些场景在图8中显示并在下文中描述。
 
+#### 6.6.4.1 Vehicle gets a malformed new order
 #### 6.6.4.1 车辆收到格式错误的新命令
 
 解决方案：
@@ -520,6 +523,7 @@ AGV应报告“noOrderToCancel”错误，并将`errorLevel`设置为“WARNING�
 2. 车辆报告警告“validationError”
 3. 警告应报告，直到车辆接受新命令。
 
+#### 6.6.4.2 Vehicle receives an order with actions it cannot perform or with fields that it cannot use
 #### 6.6.4.2 车辆收到包含其无法执行的动作或无法使用的字段的命令
 
 示例：
@@ -533,6 +537,7 @@ AGV应报告“noOrderToCancel”错误，并将`errorLevel`设置为“WARNING�
 2. 车辆报告警告“orderError”，错误字段作为错误引用
 3. 警告应报告，直到车辆接受新命令。
 
+#### 6.6.4.3 Vehicle gets a new order with the same orderId, but a lower orderUpdateId than the current orderUpdateId
 #### 6.6.4.3 车辆收到具有相同orderId但orderUpdateId低于当前orderUpdateId的新命令
 
 解决方案：
