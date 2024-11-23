@@ -197,6 +197,7 @@ AGV的功能包括：
 - 地图配置：主控系统和AGV的坐标系应匹配。
 - 枢轴点：使用AGV的不同点或充电点作为枢轴点会导致车辆的不同包络。参考点可能因情况而异，例如，对于携带负载的AGV和不携带负载的AGV可能不同。
 
+# 6 Protocol specification
 # 6 协议规范
 
 以下部分描述了通信协议的详细信息。协议规定了主控系统和AGV之间的通信。AGV与外围设备之间的通信，例如AGV与门之间的通信，被排除在外。
@@ -205,6 +206,7 @@ AGV的功能包括：
 
 此外，JSON模式可用于在公共git存储库中进行验证（https://github.com/VDA5050/VDA5050）。JSON模式会随着VDA5050的每次发布而更新。如果JSON模式与本文档之间存在差异，则以本文档中的变体为准。
 
+## 6.1 Symbols of the tables and meaning of formatting
 ## 6.1 表格符号和格式含义
 
 表格包含标识符的名称、其单位、其数据类型以及描述（如果有）。
@@ -219,6 +221,7 @@ arrayName[arrayDataType] | 变量（此处为arrayName）是方括号中包含�
 
 所有关键字区分大小写。所有字段名称均为驼峰命名法。所有枚举均为大写且无下划线。
 
+### 6.1.1 Optional fields
 ### 6.1.1 可选字段
 
 如果变量被标记为可选，则意味着对于发送方来说是可选的，因为在某些情况下变量可能不适用（例如，当主控系统向AGV发送命令时，某些AGV自行规划其轨迹，命令中的`trajectory`字段可以省略）。
@@ -231,6 +234,7 @@ arrayName[arrayDataType] | 变量（此处为arrayName）是方括号中包含�
 
 AGV应通过AGV`factsheet`消息传达其需要的可选参数。
 
+### 6.1.2 Permitted characters and field lengths
 ### 6.1.2 允许的字符和字段长度
 
 所有通信均以UTF-8编码，以实现描述的国际适应性。建议ID仅使用以下字符：
@@ -239,14 +243,17 @@ A-Z a-z 0-9 _ - . :
 
 未定义最大消息长度，但受MQTT协议规范的限制，可能还受事实表中定义的技术约束的限制。如果AGV的内存不足以处理传入的命令，则应拒绝命令。最大字段长度、字符串长度或值范围的匹配由集成商负责。为了便于集成，AGV供应商应提供在[事实表部分](#616-topic-factsheet)中详细说明的AGV事实表。
 
-### 6.1.3 字段、主题和枚举的表示法
+### 6.1.3 Notation of fields, topics and enumerations
+### 6.1.3 枚举的表示法
 
 本文档中的主题和字段以以下样式突出显示：`exampleField`和`exampleTopic`。枚举应以大写书写。这些值在文档中用单引号括起来。这包括`actionStatus`字段中的关键字（'WAITING'，'FINISHED'等）。
 
+### 6.1.4 JSON data types
 ### 6.1.4 JSON 数据类型
 
 尽可能使用JSON数据类型。因此，布尔值通过“true”或“false”进行编码，而不是使用枚举（'TRUE'，'FALSE'）或魔术数字。数值数据类型以类型和精度指定，例如，float64或uint32。不支持IEEE 754的特殊数值，如NaN和无穷大。
 
+## 6.2 MQTT connection handling, security and QoS
 ## 6.2 MQTT 连接处理、安全性和QoS
 
 MQTT协议为客户端提供了设置最后遗言消息的选项。如果客户端由于任何原因意外断开连接，最后遗言将由代理分发给其他订阅的客户端。此功能的使用在[6.14 主题 "连接"](#614-topic-connection)部分中进行了描述。
@@ -257,6 +264,7 @@ MQTT协议为客户端提供了设置最后遗言消息的选项。如果客户�
 
 为了减少通信开销，MQTT QoS级别0（尽力而为）用于主题`order`、`instantActions`、`state`、`factsheet`和`visualization`。主题`connection`应使用QoS级别1（至少一次）。
 
+## 6.3 MQTT topic levels
 ## 6.3 MQTT 主题级别
 
 由于云提供商的强制性主题结构，MQTT主题结构没有严格定义。对于基于云的MQTT代理，主题结构必须单独适应以匹配本协议中定义的主题。这意味着以下部分中定义的主题名称是强制性的。
@@ -280,6 +288,7 @@ topic | string | 主题（例如，命令或状态）参见[6.5 通信主题](#6
 
 注意：由于“/”字符用于定义主题层次结构，因此不应在上述任何字段中使用。某些MQTT代理还使用“$”字符用于特殊的内部主题，因此也不应使用。
 
+## 6.4 Protocol header
 ## 6.4 协议头
 
 每个JSON消息都以头开始。在以下部分中，出于可读性目的，将引用以下字段作为头。头由以下各个元素组成。头不是JSON对象。
@@ -308,6 +317,7 @@ serialNumber | string | AGV的序列号。
 
 - 更高的电池充电精度
 
+## 6.5 Topics for communication
 ## 6.5 通信主题
 
 AGV协议使用以下主题在主控系统和AGV之间进行信息交换。
@@ -321,10 +331,12 @@ visualization | AGV | 可视化系统 | 仅用于可视化目的的高频位置�
 connection | 代理/AGV | 主控系统 | 指示AGV连接丢失时，不用于主控系统检查车辆健康状况，添加用于MQTT协议级别的连接检查 | 强制性 | connection.schema 
 factsheet | AGV | 主控系统 | 参数或供应商特定信息，以协助在主控系统中设置AGV | 强制性 | factsheet.schema
 
+## 6.6 Topic: "order" (from master control to AGV)
 ## 6.6 主题："命令"（从主控系统到AGV）
 
 主题“命令”是AGV通过其接收JSON封装命令的MQTT主题。
 
+### 6.6.1 Concept and logic
 ### 6.6.1 概念和逻辑
 
 命令的基本结构是节点和边缘的图。AGV应遍历节点和边缘以完成命令。所有连接节点和边缘的完整图由主控系统持有。
@@ -352,6 +364,7 @@ factsheet | AGV | 主控系统 | 参数或供应商特定信息，以协助在�
 
 命令消息不一定描述完整的运输命令。为了交通控制和适应资源受限的车辆，完整的运输命令（可能由许多节点和边缘组成）可以分成许多子命令，这些子命令通过其`orderId`和`orderUpdateId`连接。更新命令的过程在下一节中描述。
 
+### 6.6.2 Orders and order update
 ### 6.6.2 命令和命令更新
 
 为了支持交通管理，主控系统可以将通过命令传达的路径分为两部分：
@@ -459,6 +472,7 @@ factsheet | AGV | 主控系统 | 参数或供应商特定信息，以协助在�
 
 9)	填充/附加状态指的是`actionStates`/`nodeStates`/`edgeStates`。
 
+### 6.6.3 Order cancellation (by master control)
 ### 6.6.3 命令取消（由主控系统）
 
 在基础节点发生计划外更改的情况下，应使用即时动作`cancelOrder`取消命令。
@@ -493,6 +507,7 @@ factsheet | AGV | 主控系统 | 参数或供应商特定信息，以协助在�
 
 AGV应报告“noOrderToCancel”错误，并将`errorLevel`设置为“WARNING”。`instantAction`的`actionId`应作为`errorReference`传递。
 
+### 6.6.4 Order rejection
 ### 6.6.4 命令拒绝
 
 在以下几种情况下，应拒绝命令。这些场景在图8中显示并在下文中描述。
@@ -529,6 +544,7 @@ AGV应报告“noOrderToCancel”错误，并将`errorLevel`设置为“WARNING�
 
 如果AGV两次接收到具有相同`orderId`和`orderUpdateId`的命令，则第二个命令将被忽略。如果主控系统重新发送命令，因为状态消息接收得太晚，主控系统无法验证第一个命令已被接收，这可能会发生。
 
+### 6.6.5 Corridors
 ### 6.6.5 走廊
 
 可选的`corridor`边缘属性允许车辆偏离边缘轨迹以避开障碍物，并定义车辆被允许操作的边界。要使用`corridor`属性，需要预定义的轨迹，如果没有定义`corridor`属性，车辆将遵循该轨迹。这可以是主控系统已知的车辆上定义的轨迹，也可以是命令中发送的轨迹。使用`corridor`属性的车辆的行为仍然是线引导车辆的行为，只是允许暂时偏离轨迹以避开障碍物。
@@ -547,6 +563,7 @@ AGV应报告“noOrderToCancel”错误，并将`errorLevel`设置为“WARNING�
 
 有关更多信息，请参见[6.10.2 节点的遍历和进入/离开边缘](#6102-traversal-of-nodes-and-enteringleaving-edges-triggering-of-actions)部分。
 
+## 6.6.6 Implementation of the order message
 ## 6.6.6 命令消息的实现
 
 对象结构 | 单位 | 数据类型 | 描述
@@ -636,6 +653,7 @@ leftWidth | m | float64 | 范围：[0.0 ... float64.max]<br>定义相对于车�
 rightWidth | m | float64 | 范围：[0.0 ... float64.max]<br>定义相对于车辆轨迹的右侧走廊的宽度（以米为单位）（见图13）。
 *corridorRefPoint* <br><br>**}**| | string | 定义边界是对运动中心还是车辆轮廓有效。如果未指定，边界对车辆的运动中心有效。<br>枚举{'KINEMATICCENTER'，'CONTOUR'}
 
+### 6.7 Maps
 ### 6.7 地图
 
 为了确保不同类型AGV之间的一致导航，位置始终相对于项目特定的坐标系指定（见图11）。为了区分站点或位置的不同级别，使用唯一的`mapId`。地图坐标系应指定为右手坐标系，z轴指向天空。因此，正旋转应理解为逆时针旋转。车辆坐标系也指定为右手坐标系，x轴指向车辆的前进方向，z轴指向上方。车辆参考点在车辆参考框架中定义为（0,0,0），除非另有说明。这符合DIN ISO 8855第2.11节。
@@ -648,6 +666,7 @@ X、Y和Z坐标应以米为单位给出。方向应以弧度为单位，并应�
 ![图12 地图和车辆的坐标系](./assets/coordinate_system_vehicle_map.png)
 >图12 地图和车辆的坐标系
 
+### 6.7.1 Map distribution
 ### 6.7.1 地图分发
 
 为了实现自动地图分发和智能管理车辆的重启，介绍了一种标准化的地图分发方式。
@@ -663,12 +682,14 @@ X、Y和Z坐标应以米为单位给出。方向应以弧度为单位，并应�
 ![图13 地图分发过程](./assets/map_distribution_process.png)
 >图13 下载、启用和删除地图所需的主控系统、AGV和地图服务器之间的通信。
 
+#### 6.7.2 Maps in the vehicle state
 #### 6.7.2 车辆状态中的地图
 
 状态中的`agvPosition`字段中的`mapId`表示当前活动的地图。车辆上可用地图的信息显示在状态消息的`maps`数组中。此数组中的每个条目都是一个JSON对象，由必填字段`mapId`、`mapVersion`和`mapStatus`组成，后者可以是'ENABLED'或'DISABLED'。'ENABLED'地图可以在需要时由车辆使用。'DISABLED'地图不应使用。下载过程的状态由当前动作未完成指示。错误也在状态中报告。
 
 请注意，具有不同`mapId`的多个地图可以同时启用。一次只能启用一个具有相同`mapId`的地图版本。如果`maps`数组为空，这意味着车辆上当前没有可用的地图。
 
+#### 6.7.3 Map download
 #### 6.7.3 地图下载
 
 地图下载由主控系统的`downloadMap`即时动作触发。此命令包含存储在地图服务器上的地图的必填参数`mapId`和`mapDownloadLink`，车辆可以访问这些参数。
@@ -678,6 +699,7 @@ AGV在开始下载地图文件时将`actionStatus`设置为“RUNNING”。如�
 确保下载地图的过程不会修改、删除、启用或禁用车辆上的任何现有地图非常重要。
 车辆应拒绝下载已在车辆上的`mapId`和`mapVersion`的地图。应报告错误，并将即时动作的状态设置为“FAILED”。主控系统应首先删除车辆上的地图，然后重新启动下载。
 
+#### 6.7.4 Enable downloaded maps
 #### 6.7.4 启用下载的地图
 
 有两种方法可以在车辆上启用地图：
@@ -688,11 +710,13 @@ AGV在开始下载地图文件时将`actionStatus`设置为“RUNNING”。如�
 主控系统负责确保在向车辆发送命令中的`nodePosition`的一部分时激活车辆上的正确地图。
 如果车辆要在新地图上设置为特定位置，则使用`initPosition`即时动作。
 
+#### 6.7.5 Delete maps on vehicle
 #### 6.7.5 删除车辆上的地图
 
 主控系统可以请求从车辆中删除特定地图。这是通过即时动作`deleteMap`完成的。当车辆内存不足时，应报告给主控系统，主控系统可以启动地图的删除。车辆本身不允许删除地图。
 成功删除地图后，重要的是从车辆状态中的地图数组中删除该地图的条目。
 
+## 6.8 Actions
 ## 6.8 动作
 
 如果AGV支持驾驶以外的动作，这些动作通过附加到节点或边缘的动作字段执行，或通过单独的主题`instantActions`发送（参见[6.10 主题 "即时动作"](#610-topic-instantactions-from-master-control-to-agv)部分）。
@@ -705,6 +729,7 @@ AGV在开始下载地图文件时将`actionStatus`设置为“RUNNING”。如�
 
 如果没有办法将某些动作映射到以下部分的动作之一，AGV制造商可以定义主控系统应使用的附加动作。
 
+### 6.8.1 Definition, parameters, effects and scope of predefined actions
 ### 6.8.1 预定义动作的定义、参数、效果和范围
 
 general | | scope
@@ -731,6 +756,7 @@ waitForTrigger | - | AGV必须等待AGV上的触发器（例如，按钮按下�
 cancelOrder | - | AGV尽快停止。<br>这可能是立即或在下一个节点上。<br>然后命令被删除。所有动作被取消。 | 是 | - | - | 是 | 否 | 否
 factsheetRequest | - | 请求AGV发送事实表 | 是 | - | - | 是 | 否 | 否
 
+### 6.8.2 States of predefined actions
 ### 6.8.2 预定义动作的状态
 
 action | action states
@@ -757,6 +783,7 @@ waitForTrigger | - | AGV正在等待触发器 | - | 触发器已被触发。 | w
 cancelOrder | - | AGV正在停止或驾驶，直到到达下一个节点。 | - | AGV静止并已取消命令。 | -
 factsheetRequest | - | - | - | 事实表已被传达 | -
 
+## 6.9 Topic: "instantActions" (from master control to AGV)
 ## 6.9 主题："即时动作"（从主控系统到AGV）
 
 在某些情况下，需要向AGV发送需要立即执行的动作。这可以通过将`instantAction`消息发布到主题`instantActions`来实现。这些不应与AGV当前命令的内容冲突（例如，`instantAction`降低叉子，而命令说要提升叉子）。
@@ -779,6 +806,7 @@ actions [action] | array | 需要立即执行的动作数组，不属于常规�
 
 当AGV接收到`instantAction`时，会在AGV的状态中添加一个适当的`actionStatus`到`actionStates`数组中。`actionStatus`会根据动作的进展进行更新。有关`actionStatus`的不同转换，请参见图16。
 
+## 6.10 Topic: "state" (from AGV to master control)
 ## 6.10 主题："状态"（从AGV到主控系统）
 
 AGV状态将仅在一个主题上进行传输。与单独的消息（例如，命令、电池状态和错误）相比，使用一个主题将减少代理和主控系统处理消息的工作量，同时也保持AGV状态信息的同步。
@@ -798,6 +826,7 @@ AGV状态消息将在相关事件发生时或最迟每30秒通过MQTT代理发�
 
 应努力减少通信量。如果两个事件相互关联（例如，接收新命令通常会强制更新`nodeStates`和`edgeStates`；驶过节点也是如此），则应触发一次状态更新而不是多次。
 
+### 6.10.1 Concept and logic
 ### 6.10.1 概念和逻辑
 
 命令进度由`nodeStates`和`edgeStates`跟踪。此外，如果AGV能够推导出其当前位置，它可以通过`position`字段发布其位置。
@@ -809,6 +838,7 @@ AGV状态消息将在相关事件发生时或最迟每30秒通过MQTT代理发�
 ![图14 状态主题提供的命令信息。仅传输最后一个节点的ID和剩余的节点和边缘](./assets/order_information_state_topic.png)
 >图14 状态主题提供的命令信息。仅传输最后一个节点的ID和剩余的节点和边缘
 
+### 6.10.2 Traversal of nodes and entering/leaving edges, triggering of actions
 ### 6.10.2 节点的遍历和进入/离开边缘，动作的触发
 
 AGV自行决定何时将节点视为已遍历。通常，AGV的控制点应在节点的`allowedDeviationXY`范围内，其方向应在`allowedDeviationTheta`范围内。如果后续边缘的边缘属性`corridor`被设置，则还应满足这些边界。
@@ -824,20 +854,24 @@ AGV通过从`nodeStates`数组中移除其`nodeState`并将`lastNodeId`、`lastN
 ![图15 在命令处理期间的nodeStates、edgeStates和actionStates的描述](./assets/states_during_order_handling.png)
 >图15 在命令处理期间的`nodeStates`、`edgeStates`和`actionStates`的描述
 
+### 6.10.3 Base request
 ### 6.10.3 基础请求
 
 如果AGV检测到其基础即将耗尽，它可以将`newBaseRequest`标志设置为“true”以防止不必要的制动。
 
+### 6.10.4 Information
 ### 6.10.4 信息
 
 AGV可以通过`information`数组向主控系统提交任意附加信息。由AGV决定报告信息的时间长度。
 
 主控系统不应使用信息消息进行逻辑处理，仅应用于可视化和调试目的。
 
+### 6.10.5 Errors
 ### 6.10.5 错误
 
 AGV通过`errors`数组报告错误。错误有两个级别：“警告”和“致命”。“警告”是自我解决的错误，例如，字段违规。“致命”错误需要人工干预。错误可以通过`errorReferences`数组传递帮助找到错误原因的引用。
 
+### 6.10.6 Implementation of the state message
 ### 6.10.6 状态消息的实现
 
 对象结构 | 单位 | 数据类型 | 描述
@@ -1005,6 +1039,7 @@ TEACHIN | 主控系统不控制AGV。<br>主管不向AGV发送驾驶命令或动
 
 >表1 操作模式及其含义
 
+## 6.11 Action states
 ## 6.11 动作状态
 
 当AGV接收到一个`action`（无论是附加到`node`或`edge`还是通过`instantAction`），它应在其`actionStates`数组中用一个`actionState`表示此`action`。
@@ -1029,6 +1064,7 @@ actionStatus | 描述
 ![图16 actionStates的所有可能状态转换](./assets/action_state_transition.png)
 >图16 actionStates的所有可能状态转换
 
+## 6.12 Action blocking types and sequence
 ## 6.12 动作阻塞类型和顺序
 
 多个动作在列表中的顺序定义了这些动作的执行顺序。动作的并行执行由其各自的`blockingType`控制。
@@ -1048,12 +1084,14 @@ HARD | 动作不得与其他动作并行执行。车辆不得驾驶。
 ![图17 处理多个动作](./assets/handling_multiple_actions.png)
 >图17 处理多个动作
 
+## 6.13 Topic "visualization"
 ## 6.13 主题"可视化"
 
 为了实现接近实时的位置更新，AGV可以在主题`visualization`上广播其位置和速度。
 
 位置对象的结构与状态中的位置和速度对象相同。有关更多信息，请参见[6.10.6 状态消息的实现](#6106-implementation-of-the-state-message)中的车辆状态。此主题的更新速率由集成商定义。
 
+## 6.14 Topic "connection"
 ## 6.14 主题"连接"
 
 在AGV客户端连接到代理期间，可以设置最后遗嘱主题和消息，当AGV客户端与代理断开连接时由代理发布。因此，主控系统可以通过订阅所有AGV的连接主题来检测断开事件。通过代理和客户端之间交换的心跳检测断开连接。大多数代理中可以配置间隔，应该设置为大约15秒。`connection`主题的服务质量级别应为1 - 至少一次。
@@ -1091,6 +1129,7 @@ AGV上线：
 
 当AGV与代理之间的连接意外停止时，代理将发送最后遗嘱主题：“uagv/v2/manufacturer/SN/connection”，字段`connectionState`设置为`CONNECTIONBROKEN`。
 
+## 6.15 Topic "factsheet"
 ## 6.15 主题"事实表"
 
 事实表提供有关特定AGV类型系列的基本信息。此信息允许比较不同的AGV类型，并可用于AGV系统的规划、尺寸和模拟。事实表还包括AGV通信接口的信息，这些信息是将AGV类型系列集成到符合VDA-5050的主控系统中所需的。
@@ -1103,6 +1142,7 @@ AGV事实表中的某些字段的值只能在系统集成期间指定，例如�
 
 此主题上的所有消息应以保留标志发送。
 
+### 6.15.1 Factsheet JSON structure
 ### 6.15.1 事实表JSON结构
 事实表由下表中列出的JSON对象组成。
 
@@ -1308,10 +1348,12 @@ AGV事实表中的某些字段的值只能在系统集成期间指定，例如�
 |&emsp;&emsp; *defaultGateway* | string | 车辆使用的默认网关，与本地IP地址对应。 |
 | &emsp;} | | |
 
+# 7 Best practice
 # 7 最佳实践
 
 本节包括有助于促进与协议逻辑一致的共同理解的附加信息。
 
+## 7.1 Error reference
 ## 7.1 错误引用
 
 如果由于错误的命令导致错误，AGV应在状态主题的errorReferences字段中返回有意义的错误引用（参见[6.10.6 状态消息的实现](#6106-implementation-of-the-state-message)）。这可以包括以下信息：
@@ -1324,6 +1366,7 @@ AGV事实表中的某些字段的值只能在系统集成期间指定，例如�
 
 如果由于外部因素（例如，预期位置没有负载）导致动作无法完成，则应引用actionId。
 
+## 7.2 Format of parameters
 ## 7.2 参数格式
 
 错误、信息和动作的参数设计为具有键值对的JSON对象数组。
@@ -1344,8 +1387,10 @@ value</br>} | 可能的值：</br>array,</br>boolean,</br>number,</br>string,</b
 
 使用建议的“key”: “actualKey”, “value”: “actualValue”方案的原因是为了保持实现的通用性。“actualValue”可以是任何可能的JSON数据类型，例如float、bool，甚至是对象。
 
+# 8 Glossary
 # 8 术语表
 
+## 8.1 Definition
 ## 8.1 定义
 
 概念 | 描述
