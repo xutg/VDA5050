@@ -44,13 +44,13 @@ www.vda.de
 [6.1 表格符号和格式含义](#61-symbols-of-the-tables-and-meaning-of-formatting)<br>
 [6.1.1 可选字段](#611-optional-fields)<br>
 [6.1.2 允许的字符和字段长度](#612-permitted-characters-and-field-lengths)<br>
-[6.1.3 枚举的表示法](#613-notation-of-enumerations) <br>
+[6.1.3 枚举的表示法](#613-notation-of-fields-topics-and-enumerations) <br>
 [6.1.4 JSON 数据类型](#614-json-data-types)<br>
 [6.2 MQTT 连接处理、安全性和QoS](#62-mqtt-connection-handling-security-and-qos)<br>
 [6.3 MQTT 主题级别](#63-mqtt-topic-levels)<br>
 [6.4 协议头](#64-protocol-header)<br>
 [6.5 通信主题](#65-topics-for-communication)<br>
-[6.6 主题："命令"（从主控系统到AGV）](#66-topic-orderfrom-master-control-to-agv)<br>
+[6.6 主题："命令"（从主控系统到AGV）](#66-topic-order-from-master-control-to-agv)<br>
 [6.6.1 概念和逻辑](#661-concept-and-logic)<br>
 [6.6.2 命令和命令更新](#662-orders-and-order-update)<br>
 [6.6.3 命令取消（由主控系统）](#663-order-cancellation-by-master-control)<br>
@@ -74,7 +74,7 @@ www.vda.de
 [6.10.4 信息](#6104-information)<br>
 [6.10.5 错误](#6105-errors)<br>
 [6.10.6 状态消息的实现](#6106-implementation-of-the-state-message)<br>
-[6.11 动作状态](#611-actionstates)<br>
+[6.11 动作状态](#611-action-states)<br>
 [6.12 动作阻塞类型和顺序](#612-action-blocking-types-and-sequence)<br>
 [6.13 主题 "可视化"](#613-topic-visualization)<br>
 [6.14 主题 "连接"](#614-topic-connection)<br>
