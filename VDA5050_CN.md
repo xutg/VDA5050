@@ -719,9 +719,9 @@ AGV在开始下载地图文件时将`actionStatus`设置为“RUNNING”。如�
 ## 6.8 Actions
 ## 6.8 动作
 
-如果AGV支持驾驶以外的动作，这些动作通过附加到节点或边缘的动作字段执行，或通过单独的主题`instantActions`发送（参见[6.10 主题 "即时动作"](#610-topic-instantactions-from-master-control-to-agv)部分）。
+如果AGV支持驾驶以外的动作，这些动作通过附加到节点或边缘的动作字段执行，或通过单独的主题`instantActions`发送（参见[6.9 主题 "即时动作"](#69-topic-instantactions-from-master-control-to-agv)部分）。
 
-在边缘上执行的动作应仅在AGV在边缘上时运行（参见[6.11.2 节点的遍历和进入/离开边缘](#6112-traversal-of-nodes-and-enteringleaving-edges-triggering-of-actions)部分）。
+在边缘上执行的动作应仅在AGV在边缘上时运行（参见[6.11.2 节点的遍历和进入/离开边缘](#6102-traversal-of-nodes-and-enteringleaving-edges-triggering-of-actions)部分）。
 
 在节点上触发的动作可以运行，只要它们需要运行，并且应是自终止的（例如，持续五秒的音频信号或拾取动作，完成后拾取负载）或成对制定（例如，“activateWarningLights”和“deactivateWarningLights”），尽管可能有例外。
 
