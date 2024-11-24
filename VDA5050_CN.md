@@ -586,17 +586,17 @@ orderUpdateId | | uint32 | 命令更新标识。<br>在orderId中是唯一的。
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**node** { | | JSON 对象 |
+**node** { | | JSON object |
 nodeId | | string | 唯一的节点标识
 sequenceId | | uint32 | 用于跟踪命令中节点和边缘的顺序并简化命令更新的编号。<br>主要目的是区分在一个orderId中多次通过的节点。<br>变量sequenceId在同一orderId的所有节点和边缘上运行，并在发出新orderId时重置。
 *nodeDescription* | | string | 节点的附加信息
 released | | boolean | "true"表示节点是基础的一部分。<br>"false"表示节点是视野的一部分。
-***nodePosition*** | | JSON 对象 | 节点位置。<br>对于不需要节点位置的车辆类型（例如，线引导车辆）是可选的。
+***nodePosition*** | | JSON object | 节点位置。<br>对于不需要节点位置的车辆类型（例如，线引导车辆）是可选的。
 **actions [action]** <br> } | | array | 在节点上执行的动作数组。<br>如果不需要动作，则为空数组。
 
 对象结构 | 单位 | 数据类型 | 描述
 ---| --- |--- | ---
-**nodePosition** { | | JSON 对象 | 在全球项目特定的世界坐标系中定义地图上的位置。<br>每个楼层都有自己的地图。<br>所有地图应使用相同的项目特定全球原点。
+**nodePosition** { | | JSON object | 在全球项目特定的世界坐标系中定义地图上的位置。<br>每个楼层都有自己的地图。<br>所有地图应使用相同的项目特定全球原点。
 x | m | float64 | 相对于地图坐标系的X位置。<br>精度取决于具体实现。
 y | m | float64 | 相对于地图坐标系的Y位置。<br>精度取决于具体实现。
 *theta* | rad | float64 | 范围：[-Pi ... Pi]<br><br>AGV在节点上的绝对方向。<br>可选：车辆可以自行规划路径。<br>如果定义，AGV必须在此节点上假设theta角度。<br>如果先前的边缘不允许旋转，AGV应在节点上旋转。<br>如果后续边缘定义了不同的方向但不允许旋转，AGV应在进入边缘之前在节点上旋转到边缘所需的方向。
@@ -607,7 +607,7 @@ mapId | | string | 位置所引用的地图的唯一标识。<br>每个地图都
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**action** { | | JSON 对象 | 描述AGV可以执行的动作。
+**action** { | | JSON object | 描述AGV可以执行的动作。
 actionType | | string | 动作的名称，如“动作和参数”第一列中所述。<br>标识动作的功能。
 actionId | | string | 唯一的ID，用于标识动作并将其映射到状态中的actionState。<br>建议：使用UUID。
 *actionDescription* | | string | 动作的附加信息
@@ -616,7 +616,7 @@ blockingType | | string | 枚举{'NONE', 'SOFT', 'HARD'}：<br>'NONE'：允许�
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**edge** { | | JSON 对象 | 两个节点之间的方向连接。
+**edge** { | | JSON object | 两个节点之间的方向连接。
 edgeId | | string | 唯一的边缘标识。
 sequenceId | | uint32 | 用于跟踪命令中节点和边缘的顺序并简化命令更新的编号。<br>变量sequenceId在同一orderId的所有节点和边缘上运行，并在发出新orderId时重置。
 *edgeDescription* | | string | 边缘的附加信息。
@@ -631,21 +631,21 @@ endNodeId | | string | 命令中最后一个节点的nodeId。
 *direction* | | string | 在交叉口为线引导或线圈引导车辆设置方向，最初定义（车辆个体）。<br>示例：“左”、“右”、“直行”。
 *rotationAllowed* | | boolean | "true"：允许在边缘上旋转。<br>"false"：不允许在边缘上旋转。<br><br>可选：<br>如果未设置，则无限制。
 *maxRotationSpeed* | rad/s | float64| 最大旋转速度<br><br>可选：<br>如果未设置，则无限制。
-***trajectory*** | | JSON 对象 | 此边缘的轨迹JSON对象为NURBS。<br>定义AGV应在边缘的起始节点和结束节点之间移动的路径。<br><br>可选：<br>如果AGV无法处理轨迹或AGV自行规划轨迹，可以省略。
+***trajectory*** | | JSON object | 此边缘的轨迹JSON对象为NURBS。<br>定义AGV应在边缘的起始节点和结束节点之间移动的路径。<br><br>可选：<br>如果AGV无法处理轨迹或AGV自行规划轨迹，可以省略。
 *length* | m | float64 | 从起始节点到结束节点的路径长度<br><br>可选：<br>此值由线引导AGV用于在到达停止位置之前降低速度。
-***corridor*** | | JSON 对象 | 定义车辆可以偏离其轨迹的边界，例如，避开障碍物。<br>
+***corridor*** | | JSON object | 定义车辆可以偏离其轨迹的边界，例如，避开障碍物。<br>
 **action [action]**<br><br><br> } | | array | 在边缘上执行的动作数组。<br>如果不需要动作，则为空数组。<br>由边缘触发的动作仅在AGV遍历触发动作的边缘时才会激活。<br>当AGV离开边缘时，动作将停止并恢复进入边缘之前的状态。
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**trajectory** { | | JSON 对象 |
+**trajectory** { | | JSON object |
 degree | | float64 | 范围：[1.0 ... float64.max]<br><br>定义轨迹的NURBS曲线的度数。<br><br>如果未定义，默认值为1。
 **knotVector [float64]** | | array | 范围：[0.0 ... 1.0]<br><br>NURBS的节点值数组。<br><br>knotVector的大小为控制点数量+度数+1。
 **controlPoints [controlPoint]**<br><br> } | | array | 定义NURBS控制点的controlPoint对象数组，显式包括起始点和结束点。
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**controlPoint** { | | JSON 对象 |
+**controlPoint** { | | JSON object |
 x | | float64 | 在世界坐标系中描述的X坐标。
 y | | float64 | 在世界坐标系中描述的Y坐标。
 *weight* | | float64 | 范围：[0.0 ... float64.max]<br><br>控制点在曲线上的权重。<br>如果未定义，默认值为1.0。
@@ -653,7 +653,7 @@ y | | float64 | 在世界坐标系中描述的Y坐标。
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-***corridor*** { | | JSON 对象 |
+***corridor*** { | | JSON object |
 leftWidth | m | float64 | 范围：[0.0 ... float64.max]<br>定义相对于车辆轨迹的左侧走廊的宽度（以米为单位）（见图13）。
 rightWidth | m | float64 | 范围：[0.0 ... float64.max]<br>定义相对于车辆轨迹的右侧走廊的宽度（以米为单位）（见图13）。
 *corridorRefPoint* <br><br>**}**| | string | 定义边界是对运动中心还是车辆轮廓有效。如果未指定，边界对车辆的运动中心有效。<br>枚举{'KINEMATICCENTER'，'CONTOUR'}
