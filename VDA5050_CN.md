@@ -894,23 +894,23 @@ lastNodeId | | string | 最后到达节点的节点ID，或者如果AGV当前在
 lastNodeSequenceId | | uint32 | 最后到达节点的序列ID，或者如果AGV当前在节点上，则为当前节点的序列ID。<br>如果没有可用的`lastNodeSequenceId`，则为“0”。
 **nodeStates [nodeState]** | |array | 需要遍历以完成命令的nodeState对象数组<br>（如果空闲则为空数组）
 **edgeStates [edgeState]** | |array | 需要遍历以完成命令的edgeState对象数组<br>（如果空闲则为空数组）
-***agvPosition*** | | JSON对象 | AGV在地图上的当前位置。<br><br>可选：仅适用于没有自我定位能力的AGV，例如，线导向AGV。
-***velocity*** | | JSON对象 | AGV在车辆坐标中的速度。
+***agvPosition*** | | JSON object | AGV在地图上的当前位置。<br><br>可选：仅适用于没有自我定位能力的AGV，例如，线导向AGV。
+***velocity*** | | JSON object | AGV在车辆坐标中的速度。
 ***loads [load]*** | | array | AGV当前处理的负载。<br><br>可选：如果AGV无法确定负载状态，则应完全省略此字段，而不是报告为空数组。<br>如果AGV可以确定负载状态，但数组为空，则认为AGV未加载。
 driving | | boolean | “true”：表示AGV正在驾驶和/或旋转。AGV的其他运动（例如，提升运动）不包括在内。<br>“false”：表示AGV既不驾驶也不旋转。
 *paused* | | boolean | “true”：AGV当前处于暂停状态，可能是由于AGV上的物理按钮或即时动作。<br>AGV可以恢复命令。<br><br>“false”：AGV当前不处于暂停状态。
 *newBaseRequest* | | boolean | “true”：AGV几乎到达基础的末端，如果没有传输新的基础，将减速。<br>触发主控系统发送新的基础。<br><br>“false”：不需要基础更新。
 *distanceSinceLastNode* | meter | float64 | 用于线导向车辆，指示其在lastNodeId之后行驶的距离。<br>距离以米为单位。
 **actionStates [actionState]** | | array | 包含当前命令的所有动作和自上次命令以来接收到的所有即时动作的数组。动作状态在接收到新命令时保留。动作状态，除了正在运行的即时动作，在接收到新命令时被移除。<br>这可能包括仍在进行中的先前节点的动作。<br><br>当动作完成时，发布更新的状态消息，actionStatus设置为“FINISHED”，如果适用，带有相应的resultDescription。
-**batteryState** | | JSON对象 | 包含所有与电池相关的信息。
+**batteryState** | | JSON object | 包含所有与电池相关的信息。
 operatingMode | | string | 枚举{'AUTOMATIC', 'SEMIAUTOMATIC', 'MANUAL', 'SERVICE', 'TEACHIN'}<br>有关更多信息，请参见[6.10.6 状态消息的实现](#6106-implementation-of-the-state-message)中的表1。
 **errors [error]** | | array | 错误对象数组。<br>AGV的所有活动错误应在数组中。<br>空数组表示AGV没有活动错误。
 ***information [info]*** | | array | 信息对象数组。<br>空数组表示AGV没有信息。<br>这仅应用于可视化或调试——不应用于主控系统中的逻辑。
-**safetyState** | | JSON对象 | 包含所有与安全相关的信息。
+**safetyState** | | JSON object | 包含所有与安全相关的信息。
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**map**{ | | JSON对象|
+**map**{ | | JSON object|
 mapId | | string | 描述车辆工作空间定义区域的地图ID。
 mapVersion | | string | 地图的版本。
 *mapDescription* | | string | 地图的附加信息。
@@ -918,25 +918,25 @@ mapStatus <br>}| | string | 枚举{'ENABLED', 'DISABLED'}<br>'ENABLED'：表示�
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**nodeState** { | JSON对象 | |
+**nodeState** { | JSON object | |
 nodeId | | string | 唯一的节点标识。
 sequenceId | | uint32 | 区分具有相同nodeId的多个节点的序列ID。
 *nodeDescription* | | string | 节点的附加信息。
 released| | boolean | “true”表示节点是基础的一部分。<br>“false”表示节点是视野的一部分。
-***nodePosition***<br><br>}| | JSON对象 | 节点位置。<br>该对象在[6.6 主题“命令”](#66-topic-order-from-master-control-to-agv)中定义<br>可选：<br>主控系统有此信息。<br>可以额外发送，例如，用于调试目的。
+***nodePosition***<br><br>}| | JSON object | 节点位置。<br>该对象在[6.6 主题“命令”](#66-topic-order-from-master-control-to-agv)中定义<br>可选：<br>主控系统有此信息。<br>可以额外发送，例如，用于调试目的。
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**edgeState** { | | JSON对象 | |
+**edgeState** { | | JSON object | |
 edgeId | | string | 唯一的边缘标识。
 sequenceId | | uint32 | 区分具有相同edgeId的多个边缘的序列ID。
 *edgeDescription* | | string | 边缘的附加信息。
 released | | boolean | “true”表示边缘是基础的一部分。<br>“false”表示边缘是视野的一部分。
-***trajectory*** <br><br>} | | JSON对象 | 轨迹以NURBS的形式进行通信，并在[6.6.6 命令消息的实现](#666-implementation-of-the-order-message)中定义<br><br>轨迹段从车辆进入边缘的点开始，并在车辆报告终点节点已遍历时终止。
+***trajectory*** <br><br>} | | JSON object | 轨迹以NURBS的形式进行通信，并在[6.6.6 命令消息的实现](#666-implementation-of-the-order-message)中定义<br><br>轨迹段从车辆进入边缘的点开始，并在车辆报告终点节点已遍历时终止。
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**agvPosition** { | | JSON对象 | 在世界坐标中定义地图上的位置。每个楼层都有自己的地图。
+**agvPosition** { | | JSON object | 在世界坐标中定义地图上的位置。每个楼层都有自己的地图。
 positionInitialized | | boolean | “true”：位置已初始化。<br>“false”：位置未初始化。
 *localizationScore* | | float64 | 范围：[0.0 ... 1.0]<br><br>描述定位的质量，因此可以用于，例如，SLAM AGV描述当前位置信息的准确性。<br><br>0.0：位置未知<br>1.0：位置已知<br><br>可选：对于无法估计其定位分数的车辆。<br><br>仅用于日志记录和可视化目的。
 *deviationRange* | m | float64 | 位置偏差范围的值，以米为单位。<br><br>可选：对于无法估计其偏差的车辆，例如，基于网格的定位。<br><br>仅用于日志记录和可视化目的。
@@ -948,24 +948,24 @@ mapId | | string | 参考位置的地图的唯一标识。<br><br>每个地图�
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**velocity** { | | JSON对象 |
+**velocity** { | | JSON object |
 *vx* | m/s | float64 | AGV在其X方向的速度。
 *vy* | m/s | float64 | AGV在其Y方向的速度。
 *omega*<br>}| Rad/s | float64 | AGV围绕其Z轴的转速。
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**load** { | | JSON对象 |
+**load** { | | JSON object |
 *loadId* | | string | 负载的唯一标识（例如，条形码或RFID）。<br><br>如果AGV可以识别负载但尚未识别负载，则为空字段。<br><br>可选：如果AGV无法识别负载。
 *loadType* | | string | 负载类型。
 *loadPosition* | | string | 指示AGV使用的负载处理/携带单元，例如，在AGV有多个位置/位置携带负载的情况下。<br><br>例如：“前”，“后”，“位置C1”等。<br><br>可选：对于只有一个loadPosition的车辆
-***boundingBoxReference*** | | JSON对象 | 用于定位边界框的位置的参考点。<br>参考点始终是边界框底面（在高度=0）的中心，并在AGV的坐标系中描述。
-***loadDimensions*** | | JSON对象 | 负载边界框的尺寸，以米为单位。
+***boundingBoxReference*** | | JSON object | 用于定位边界框的位置的参考点。<br>参考点始终是边界框底面（在高度=0）的中心，并在AGV的坐标系中描述。
+***loadDimensions*** | | JSON object | 负载边界框的尺寸，以米为单位。
 *weight*<br>} | kg | float64 | 范围：[0.0 ... float64.max]<br><br>以千克为单位测量的负载的绝对重量。
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**boundingBoxReference** { | | JSON对象 | 用于定位边界框的位置的参考点。<br>参考点始终是边界框底面（在高度=0）的中心，并在AGV的坐标系中描述。
+**boundingBoxReference** { | | JSON object | 用于定位边界框的位置的参考点。<br>参考点始终是边界框底面（在高度=0）的中心，并在AGV的坐标系中描述。
 x | | float64 | 参考点的X坐标。
 y | | float64 | 参考点的Y坐标。
 z | | float 64 | 参考点的Z坐标。
@@ -973,14 +973,14 @@ z | | float 64 | 参考点的Z坐标。
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**loadDimensions** { | | JSON对象 | 负载边界框的尺寸，以米为单位。
+**loadDimensions** { | | JSON object | 负载边界框的尺寸，以米为单位。
 length | m | float64 | 负载边界框的绝对长度。
 width | m | float64 | 负载边界框的绝对宽度。
 *height* <br>}| m | float64 | 负载边界框的绝对高度。<br><br>可选：<br><br>仅在已知时设置值。
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**actionState** { | | JSON对象 |
+**actionState** { | | JSON object |
 actionId | |string | 动作的唯一标识符。
 *actionType* | | string | 动作的类型。<br><br>可选：仅用于信息或可视化目的。主控系统知道在命令中分派的动作类型。
 *actionDescription* | | string | 当前动作的附加信息。
@@ -989,7 +989,7 @@ actionStatus | | string | 枚举{'WAITING', 'INITIALIZING', 'RUNNING', 'PAUSED',
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**batteryState** { | | JSON对象 | 
+**batteryState** { | | JSON object | 
 batteryCharge | % | float64 | 电量状态：<br>如果AGV仅提供良好或不良电池电量的值，这些将分别表示为20%（不良）和80%（良好）。
 *batteryVoltage* | V | float64 | 电池电压。
 *batteryHealth* | % | int8 | 范围：[0 ... 100]<br><br>描述电池健康状况的状态。 
@@ -998,7 +998,7 @@ charging | | boolean | “true”：正在充电。<br>“false”：AGV当前�
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**error** { | | JSON对象 |
+**error** { | | JSON object |
 errorType | | string | 错误的类型/名称
 ***errorReferences [errorReference]*** | | array | 引用数组（例如，nodeId、edgeId、orderId、actionId等）以提供与错误相关的更多信息。<br>有关更多信息，请参见[7 最佳实践](#7-best-practice)。
 *errorDescription* | | string | 提供详细信息和可能原因的详细描述。
@@ -1007,13 +1007,13 @@ errorLevel <br> }| | string | 枚举{'WARNING', 'FATAL'}<br><br>'WARNING'：AGV�
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**errorReference** { | | JSON对象 |
+**errorReference** { | | JSON object |
 referenceKey | | string | 指定使用的引用类型（例如，nodeId、edgeId、orderId、actionId等）。
 referenceValue <br>} | | string | 属于引用键的值。例如，发生错误的节点的ID。
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**info** { | | JSON对象 |
+**info** { | | JSON object |
 infoType | | string | 信息的类型/名称。
 *infoReferences [infoReference]* | | array | 引用数组。
 *infoDescription* | | string | 信息的描述。
@@ -1021,13 +1021,13 @@ infoLevel <br>}| | string | 枚举{'DEBUG', 'INFO'}<br><br>'DEBUG'：用于调�
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**infoReference** { | | JSON对象 |
+**infoReference** { | | JSON object |
 referenceKey | | string | 引用的类型（例如，headerId、orderId、actionId等）。
 referenceValue <br>} | | string | 引用的值，属于引用键。
 
 对象结构 | 单位 | 数据类型 | 描述
 ---|---|---|---
-**safetyState** { | | JSON对象 |
+**safetyState** { | | JSON object |
 eStop | | string | 枚举{'AUTOACK', 'MANUAL', 'REMOTE', 'NONE'}<br><br>紧急停止的确认类型：<br>'AUTOACK'：自动确认的紧急停止已激活，例如，由保险杠或保护区域触发。<br>'MANUAL'：紧急停止必须在车辆上手动确认。<br>'REMOTE'：设施的紧急停止必须远程确认。<br>'NONE'：没有激活紧急停止。
 fieldViolation<br>} | | boolean | 保护区域违规。<br>"true"：区域被违反<br>"false"：区域未被违反。
 
@@ -1158,13 +1158,13 @@ AGV事实表中的某些字段的值只能在系统集成期间指定，例如�
 | version | string | 协议的版本[Major].[Minor].[Patch]（例如，1.3.2）。 |
 | manufacturer | string | AGV的制造商。 |
 | serialNumber | string | AGV的序列号。 |
-| **typeSpecification** | JSON对象 | 这些参数通常指定AGV的类别和能力。 |
-| **physicalParameters** | JSON对象 | 这些参数指定AGV的基本物理属性。 |
-| **protocolLimits** | JSON对象 | MQTT通信中标识符、数组、字符串等的长度限制。 |
-| **protocolFeatures** | JSON对象 | 支持的VDA5050协议功能。 |
-| **agvGeometry** | JSON对象 | AGV几何的详细定义。 |
-| **loadSpecification** | JSON对象 | 负载能力的抽象规范。 |
-| ***vehicleConfig*** | JSON对象 | 车辆上当前软件和硬件版本的摘要以及可选的网络信息。 |
+| **typeSpecification** | JSON object | 这些参数通常指定AGV的类别和能力。 |
+| **physicalParameters** | JSON object | 这些参数指定AGV的基本物理属性。 |
+| **protocolLimits** | JSON object | MQTT通信中标识符、数组、字符串等的长度限制。 |
+| **protocolFeatures** | JSON object | 支持的VDA5050协议功能。 |
+| **agvGeometry** | JSON object | AGV几何的详细定义。 |
+| **loadSpecification** | JSON object | 负载能力的抽象规范。 |
+| ***vehicleConfig*** | JSON object | 车辆上当前软件和硬件版本的摘要以及可选的网络信息。 |
 
 #### typeSpecification
 
@@ -1204,7 +1204,7 @@ AGV事实表中的某些字段的值只能在系统集成期间指定，例如�
 
 | **字段** | **数据类型** | **描述** |
 |---|---|---|
-| **maxStringLens** { | JSON对象 | 字符串的最大长度。 |
+| **maxStringLens** { | JSON object | 字符串的最大长度。 |
 | &emsp;*msgLen* | uint32 | 最大MQTT消息长度。 |
 | &emsp;*topicSerialLen* | uint32 | MQTT主题中序列号部分的最大长度。<br/><br/>受影响的参数：<br/>order.serialNumber<br/>instantActions.serialNumber<br/>state.SerialNumber<br/>visualization.serialNumber<br/>connection.serialNumber |
 | &emsp;*topicElemLen* | uint32 | MQTT主题中所有其他部分的最大长度。<br/><br/>受影响的参数：<br/>order.timestamp<br/>order.version<br/>order.manufacturer<br/>instantActions.timestamp<br/>instantActions.version<br/>instantActions.manufacturer<br/>state.timestamp<br/>state.version<br/>state.manufacturer<br/>visualization.timestamp<br/>visualization.version<br/>visualization.manufacturer<br/>connection.timestamp<br/>connection.version<br/>connection.manufacturer |
@@ -1213,7 +1213,7 @@ AGV事实表中的某些字段的值只能在系统集成期间指定，例如�
 | &emsp;*enumLen* | uint32 | 枚举和键字符串的最大长度。<br/><br/>受影响的参数：<br/>action.actionType action.blockingType<br/>edge.direction<br/>actionParameter.key<br/>state.operatingMode<br/>load.loadPosition<br/>load.loadType<br/>actionState.actionStatus<br/>error.errorType<br/>error.errorLevel<br/>errorReference.referenceKey<br/>info.infoType<br/>info.infoLevel<br/>safetyState.eStop<br/>connection.connectionState |
 | &emsp;*loadIdLen* | uint32 | loadId字符串的最大长度。 |
 | } | | |
-| **maxArrayLens** { | JSON对象 | 数组的最大长度。 |
+| **maxArrayLens** { | JSON object | 数组的最大长度。 |
 | &emsp;*order.nodes* | uint32 | AGV可处理的每个命令的最大节点数。 |
 | &emsp;*order.edges* | uint32 | AGV可处理的每个命令的最大边缘数。 |
 | &emsp;*node.actions* | uint32 | AGV可处理的每个节点的最大动作数。 |
@@ -1231,7 +1231,7 @@ AGV事实表中的某些字段的值只能在系统集成期间指定，例如�
 | &emsp;*error.errorReferences* | uint32 | AGV为每个错误发送的最大错误引用数。 |
 | &emsp;*information.infoReferences* | uint32 | AGV为每个信息发送的最大信息引用数。 |
 | } | | |
-| **timing** { | JSON对象 | 时间信息。 |
+| **timing** { | JSON object | 时间信息。 |
 | &emsp;minOrderInterval | float32 | [s]，发送命令消息到AGV的最小间隔。 |
 | &emsp;minStateInterval | float32 | [s]，发送状态消息的最小间隔。 |
 | &emsp;*defaultStateInterval* | float32 | [s]，发送状态消息的默认间隔，*如果未定义，则使用主文档中的默认值*。 |
@@ -1244,18 +1244,18 @@ AGV事实表中的某些字段的值只能在系统集成期间指定，例如�
 
 | **字段** | **数据类型** | **描述** |
 |---|---|---|
-| **optionalParameters** [**optionalParameter**] | JSON对象数组 | 支持和/或需要的可选参数数组。<br/>未在此列出的可选参数被假定为AGV不支持。 |
+| **optionalParameters** [**optionalParameter**] | array of JSON object | 支持和/或需要的可选参数数组。<br/>未在此列出的可选参数被假定为AGV不支持。 |
 | { | | |
 | &emsp;parameter | string | 可选参数的全名，例如，"*order.nodes.nodePosition.allowedDeviationTheta"*.|
 | &emsp;support | 枚举 | 可选参数的支持类型，可能的值如下：<br/>'SUPPORTED'：可选参数按指定支持。<br/>'REQUIRED'：可选参数是AGV正常运行所必需的。 |
 | &emsp;*description*| string | 自由格式文本：可选参数的描述，例如，<ul><li>为什么此AGV类型需要可选参数方向及其可能包含的值。</li><li>参数nodeMarker应仅包含无符号整数。</li><li>NURBS支持仅限于直线和圆弧段。</li>|
 | } | | |
-| **agvActions** [**agvAction**] | JSON对象数组 | 此AGV支持的所有动作及其参数的数组。这包括VDA5050中指定的标准动作和制造商特定的动作。 |
+| **agvActions** [**agvAction**] | array of JSON object | 此AGV支持的所有动作及其参数的数组。这包括VDA5050中指定的标准动作和制造商特定的动作。 |
 | { | | |
 | &emsp;actionType | string | 对应于action.actionType的动作类型。 |
 | &emsp;*actionDescription* | string | 自由格式文本：动作的描述。 |
 | &emsp;actionScopes | 枚举数组 | 使用此动作类型的允许范围数组。<br/><br/>'INSTANT'：可用作即时动作。<br/>'NODE'：可用于节点。<br/>'EDGE'：可用于边缘。<br/><br/>例如：['INSTANT', 'NODE']|
-| &emsp;***actionParameters** [**actionParameter**]* | JSON对象数组 | 动作具有的参数数组。<br/>如果未定义，则动作没有参数。<br/>此处定义的JSON对象与[6.6.6 命令消息的实现](#666-implementation-of-the-order-message)中节点和边缘内使用的JSON对象不同。|
+| &emsp;***actionParameters** [**actionParameter**]* | array of JSON object | 动作具有的参数数组。<br/>如果未定义，则动作没有参数。<br/>此处定义的JSON对象与[6.6.6 命令消息的实现](#666-implementation-of-the-order-message)中节点和边缘内使用的JSON对象不同。|
 |&emsp;*{* | | |
 |&emsp;&emsp;key | string | 参数的键字符串。 |
 |&emsp;&emsp;valueDataType | 枚举 | 值的数据类型，可能的数据类型为：'BOOL'，'NUMBER'，'INTEGER'，'FLOAT'，'STRING'，'OBJECT'，'ARRAY'。 |
@@ -1272,12 +1272,12 @@ AGV事实表中的某些字段的值只能在系统集成期间指定，例如�
 
 | **字段** | **数据类型** | **描述** |
 |---|---|---|
-| ***wheelDefinitions** [**wheelDefinition**]* | JSON对象数组 | 车轮的数组，包含车轮布置和几何。 |
+| ***wheelDefinitions** [**wheelDefinition**]* | array of JSON object | 车轮的数组，包含车轮布置和几何。 |
 | { | | |
 | &emsp;type | 枚举 | 车轮类型<br/> 枚举{'DRIVE', 'CASTER', 'FIXED', 'MECANUM'}。 |
 | &emsp;isActiveDriven | boolean | “true”：车轮是主动驱动的。 |
 | &emsp;isActiveSteered | boolean | “true”：车轮是主动转向的。 |
-| &emsp;**position** { | JSON对象 | |
+| &emsp;**position** { | JSON object | |
 |&emsp;&emsp; x | float64 | [m]，AGV坐标系中的x位置。 |
 |&emsp;&emsp; y | float64 | [m]，AGV坐标系中的y位置。 |
 |&emsp;&emsp; *theta* | float64 | [rad]，AGV坐标系中车轮的方向。对于固定车轮是必要的。 |
@@ -1287,21 +1287,21 @@ AGV事实表中的某些字段的值只能在系统集成期间指定，例如�
 | &emsp;*centerDisplacement* | float64 | [m]，车轮中心到旋转点的标称位移（对于脚轮是必要的）。<br/> 如果未定义此参数，则假定为0。 |
 | &emsp;*constraints* | string | 自由格式文本：可由制造商用于定义约束。 |
 | } | | |
-| ***envelopes2d** [**envelope2d**]* | JSON对象数组 | AGV在2D中的包络曲线数组，例如，未加载和加载状态的机械包络，不同速度情况下的安全区域。 |
+| ***envelopes2d** [**envelope2d**]* | array of JSON object | AGV在2D中的包络曲线数组，例如，未加载和加载状态的机械包络，不同速度情况下的安全区域。 |
 | { | | |
 | &emsp;set | string | 包络曲线集的名称。 |
-| &emsp;**polygonPoints** **[polygonPoint]** | JSON对象数组 | 包络曲线作为x/y多边形，多边形假定为闭合且不应自相交。 |
+| &emsp;**polygonPoints** **[polygonPoint]** | array of JSON object | 包络曲线作为x/y多边形，多边形假定为闭合且不应自相交。 |
 | &emsp;{ | | |
 |&emsp;&emsp; x | float64 | [m]，多边形点的X位置。 |
 |&emsp;&emsp; y | float64 | [m]，多边形点的Y位置。 |
 | &emsp;} | | |
 | &emsp;*description* | string | 自由格式文本：包络曲线集的描述。 |
 | *}* | | |
-| ***envelopes3d [envelope3d]*** | JSON对象数组 | AGV在3D中的包络曲线数组。 |
+| ***envelopes3d [envelope3d]*** | array of JSON object | AGV在3D中的包络曲线数组。 |
 | *{* | | |
 | &emsp;set | string | 包络曲线集的名称。 |
 | &emsp;format | string | 数据的格式，例如，DXF。 |
-| &emsp;***data*** | JSON对象 | 3D包络曲线数据，格式在'format'中指定。 |
+| &emsp;***data*** | JSON object | 3D包络曲线数据，格式在'format'中指定。 |
 | &emsp;*url* | string | 下载3D包络曲线数据的协议和URL定义，例如，<ftp://xxx.yyy.com/ac4dgvhoif5tghji>。 |
 | &emsp;*description* | string | 自由格式文本：包络曲线集的描述 |
 | *}* | | |
@@ -1313,13 +1313,13 @@ AGV事实表中的某些字段的值只能在系统集成期间指定，例如�
 | **字段** | **数据类型** | **描述** |
 |---|---|---|
 | *loadPositions* | 字符串数组 | 负载位置/负载处理设备的数组。<br/>此数组包含参数"state.loads[].loadPosition"和动作参数"lhd"的有效值，用于动作拾取和放置。<br/>*如果此数组不存在或为空，则AGV没有负载处理设备。* |
-| ***loadSets [loadSet]*** | JSON对象数组 | AGV可以处理的负载集数组 |
+| ***loadSets [loadSet]*** | array of JSON object | AGV可以处理的负载集数组 |
 | { | | |
 |&emsp; setName | string | 负载集的唯一名称，例如，DEFAULT，SET1等。 |
 |&emsp; loadType | string | 负载类型，例如，EPAL，XLT1200等。 |
 |&emsp; *loadPositions* | 字符串数组 | 负载位置之间的负载处理设备数组，此负载集对其有效。<br/>*如果此参数不存在或为空，则此负载集对AGV上的所有负载处理设备有效。* |
-|&emsp; ***boundingBoxReference*** | JSON对象 | 在状态消息中参数loads[]中定义的边界框参考。 |
-|&emsp; ***loadDimensions*** | JSON对象 | 在状态消息中参数loads[]中定义的负载尺寸。 |
+|&emsp; ***boundingBoxReference*** | JSON object | 在状态消息中参数loads[]中定义的边界框参考。 |
+|&emsp; ***loadDimensions*** | JSON object | 在状态消息中参数loads[]中定义的负载尺寸。 |
 |&emsp; *maxWeight* | float64 | [kg]，负载类型的最大重量。 |
 |&emsp; *minLoadhandlingHeight* | float64 | [m]，此负载类型和重量的最小允许高度<br/>参考边界框参考。 |
 |&emsp; *maxLoadhandlingHeight* | float64 | [m]，此负载类型和重量的最大允许高度<br/>参考边界框参考。 |
@@ -1341,11 +1341,11 @@ AGV事实表中的某些字段的值只能在系统集成期间指定，例如�
 
 | **字段** | **数据类型** | **描述** |
 |---|---|---|
-| *versions[versionInfo]* | JSON对象数组 | 包含软件和硬件信息的键值对对象数组。| | { | | |
+| *versions[versionInfo]* | array of JSON object | 包含软件和硬件信息的键值对对象数组。| | { | | |
 |&emsp; key | string | 使用的软件/硬件版本的键。（例如，softwareVersion） |
 |&emsp; value | string | 与键对应的版本。（例如，v1.12.4-beta） |
 | } | | |
-| *network* { | JSON对象 | 关于车辆网络连接的信息。列出的信息在车辆运行时不应更新。 |
+| *network* { | JSON object | 关于车辆网络连接的信息。列出的信息在车辆运行时不应更新。 |
 |&emsp;&emsp; *dnsServers* | 字符串数组 | 车辆使用的域名服务器（DNS）数组。 |
 |&emsp;&emsp; *ntpServers* | 字符串数组 | 车辆使用的网络时间协议（NTP）服务器数组。 |
 |&emsp;&emsp; *localIpAddress* | string | 用于与MQTT代理通信的预先分配的IP地址。请注意，此IP地址在操作期间不应修改/更改。 |
@@ -1378,7 +1378,7 @@ AGV事实表中的某些字段的值只能在系统集成期间指定，例如�
 
 | **字段** | **数据类型** | **描述** |
 |---|---|---|
-**actionParameter** { | JSON对象 | 指定动作的actionParameter，例如，deviceId、loadId、外部触发器。
+**actionParameter** { | JSON object | 指定动作的actionParameter，例如，deviceId、loadId、外部触发器。
 key | string | 参数的键。
 value</br>} | 可能的值：</br>array,</br>boolean,</br>number,</br>string,</br>object | 属于键的参数值。
 
